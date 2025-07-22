@@ -2,8 +2,9 @@
 트랜스포머 학습 속도 향상을 위해 Layer Norm의 위치 변경 및 Dynamic Tanh으로 교체 실험
 
 ### 개요
-트랜스포머의 학습 속도를 높이기 위해 Layer Norm의 연산을 줄여 병목 현상을 해결 실험.
-약 2만7천개의  
+트랜스포머의 학습 속도를 높이기 위해 Layer Norm의 연산의 병목 현상을 해결하기 위해 Dynamic Tanh 변경 실험.
+
+약 2만7천개의 영어-독일 번역 데이터셋을 활용하여, Loss의 수렴 속도와 Bleu 점수 확인  
 
 ### Transformer 정규화 방식 비교
 
@@ -30,6 +31,6 @@
 
 
 ### Reference
-[https://arxiv.org/abs/2503.1062](https://arxiv.org/abs/2503.10622) : 
+[https://arxiv.org/abs/2503.1062](https://arxiv.org/abs/2503.10622) : Transformers without Normalization
 
 https://arxiv.org/pdf/2002.04745 : On Layer Normalization in the Transformer Architecture
