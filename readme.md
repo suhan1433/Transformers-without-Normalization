@@ -1,8 +1,9 @@
 ## Transformers-without-Normalization
-트랜스포머의 Layer Norm의 위치 변경 및 Dynamic Tanh으로 교체 실험
+트랜스포머 학습 속도 향상을 위해 Layer Norm의 위치 변경 및 Dynamic Tanh으로 교체 실험
 
 ### 개요
-트랜스포머의 학습 속도를 높이기 위해  
+트랜스포머의 학습 속도를 높이기 위해 Layer Norm의 연산을 줄여 병목 현상을 해결 실험.
+약 2만7천개의  
 
 ### Transformer 정규화 방식 비교
 
@@ -29,5 +30,6 @@
 
 
 ### Reference
-https://arxiv.org/abs/2503.10622
-https://arxiv.org/pdf/2002.04745
+[https://arxiv.org/abs/2503.1062](https://arxiv.org/abs/2503.10622) : 
+
+https://arxiv.org/pdf/2002.04745 : On Layer Normalization in the Transformer Architecture
