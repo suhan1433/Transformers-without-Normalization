@@ -16,6 +16,8 @@
 | **주요 단점** | • 긴 Warm-up 필요<br>• 학습 초기 불안정<br>• Gradient explosion 위험 | • 기존 PreNorm 모델과의 호환성 | • 상대적으로 새로운 기법<br>• 검증 사례가 제한적 |
 | **현재 상태** | 초기 Transformer 모델에서 사용 | 현재 대부분 모델의 표준 | 연구 단계의 새로운 접근법 |
 
+## 실험 
+
 ### Dataset
 
 **Multi30K** (영어-독일어 번역 데이터셋)
@@ -23,7 +25,21 @@
 - **Validation**: 1,014  
 - **Test**: 1,000
 
-
+### 학습 파라미터
+| 항목              | 값                                 |
+|------------------|------------------------------------|
+| `hidden_size`    | `512`                              |
+| `Multihead_splits` | `8`                              |
+| `enc_blocks`     | `6`                                |
+| `dec_blocks`     | `6`                                |
+| `dropout_p`      | `0.1`                              |
+| `max_length`     | `128`                              |
+| `batch_size`     | `150`                              |
+| `epochs`         | `200`                              |
+| `patience`       | `3`                                |
+| `Scheduler`      | `CosineAnnealingLR`               |
+| `활성화 함수`     | `ReLU`                             |
+| `Optimizer`      | `Adam(모멘텀=0.9, β2=0.98, eps=1e-9)` |
 
 
 
