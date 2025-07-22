@@ -16,6 +16,10 @@
 | **주요 단점** | • 긴 Warm-up 필요<br>• 학습 초기 불안정<br>• Gradient explosion 위험 | • 기존 PreNorm 모델과의 호환성 | • 상대적으로 새로운 기법<br>• 검증 사례가 제한적 |
 | **현재 상태** | 초기 Transformer 모델에서 사용 | 현재 대부분 모델의 표준 | 연구 단계의 새로운 접근법 |
 
+### 방법론
+Dynamic tanh: 단순한 element-wise 연산 → 병렬화 쉬움
+LayerNorm: 평균/분산 계산 필요 → 계산 비용 높음
+
 ## 실험 
 
 ### Dataset
@@ -75,11 +79,28 @@
 - DyT_Encoder : PreLayerNorm 구조에서 인코더의 LayerNorm만 DyT로 변경
 - DyT : PreLayerNorm 구조에서 인코더, 디코더 LayerNorm을 전부 DyT로 변경
 
-주요 관찰 사항:
+결과:
 - **DyT_Decoder**가 전체적으로 가장 우수한 성능을 보임 (Val Loss: 1.74, BLEU: 0.31)
 - **DyT_Encoder**와 **DyT_Decoder** 모두 9 epoch만에 우수한 성능에 도달하여 빠른 수렴 속도를 보임
 - PreLayerNorm 대비 DyT 계열 모델들은 2배 빠른 수렴 속도 달성
-- PostLayerNorm은 학습이 제대로 이루어지지 않음 (BLEU: 0.00)
+- PostLayerNorm은 Warmup과정이 없기에 학습이 제대로 이루어지지 않음 (BLEU: 0.00)
+
+## 한계점
+
+* 대규모 모델에서의 성능 문제
+- 여러 아티클을 검토한 결과, 대규모 모델에서는 DyT의 성능이 LayerNorm 대비 오히려 저하되는 경우가 확인됨
+- 현재까지 검증된 사례가 제한적이어서 실제 프로덕션 환경 적용에는 검토 필요
+
+*Fine-tuning 및 Inference 적용의 제약
+- DyT는 `tanh(ax)`에서 스케일링 파라미터 `a`를 학습해야 하는 구조
+- Pre-trained 모델의 Fine-tuning 시:
+  - 기존 LayerNorm 가중치와 호환되지 않아 아키텍처 변경 필요
+  - `a` 파라미터 초기화 및 재학습으로 인한 추가적인 학습 비용 발생
+- Inference-only 적용이 불가능:
+  - 단순히 normalization 방식만 교체할 수 없음
+  - 사전 훈련된 모델에 즉시 적용하기 어려운 구조적 한계
+  
+
 
 ### Reference
 [https://arxiv.org/abs/2503.1062](https://arxiv.org/abs/2503.10622) : Transformers without Normalization
