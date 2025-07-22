@@ -4,6 +4,7 @@
 ### 개요
 트랜스포머 모델의 학습 효율성을 향상시키기 위해, 기존 LayerNorm의 계산 복잡도 및 병렬화 제약 문제를 Dynamic Tanh (DyT) 정규화 기법으로 대체하는 실험을 수행했습니다. 
 LayerNorm의 통계량 계산 오버헤드와 GPU 동기화 비용을 element-wise 연산 기반의 DyT로 해결하여, 모델 성능 유지와 동시에 훈련 속도 개선을 목표로 합니다.
+[https://arxiv.org/abs/2503.1062](https://arxiv.org/abs/2503.10622)
 
 약 2만 7천 개의 영어-독일어 번역 데이터셋을 활용하여, Loss 수렴 속도와 BLEU 점수를 평가했습니다.
 
@@ -167,6 +168,7 @@ class DyT(nn.Module):
 
 ### PreLayerNorm과 DyT의 Layer 형상 비교
 <img width="857" height="586" alt="스크린샷 2025-07-22 오후 12 40 38" src="https://github.com/user-attachments/assets/d1e51137-a46d-4fb9-9697-218e35206c93" />
+
 DyT의 경우 S곡선이 뚜렷하게 나오며, LayerNorm의 경우 S곡선이 애매하다
 
 LayerNorm Layer 개수 (총 30개)
