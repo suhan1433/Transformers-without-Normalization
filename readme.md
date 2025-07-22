@@ -167,10 +167,8 @@ class DyT(nn.Module):
 
 ### PreLayerNorm과 DyT의 Layer 형상 비교
 <img width="857" height="586" alt="스크린샷 2025-07-22 오후 12 40 38" src="https://github.com/user-attachments/assets/d1e51137-a46d-4fb9-9697-218e35206c93" />
+DyT의 경우 S곡선이 뚜렷하게 나오며, LayerNorm의 경우 S곡선이 애매하다
 
-
-## 결과
-<img width="1591" height="541" alt="스크린샷 2025-07-22 오후 12 52 09" src="https://github.com/user-attachments/assets/16577522-454e-47ff-8a74-dc5c14f1dc37" />
 LayerNorm Layer 개수 (총 30개)
 
 Encoder (총 12개)
@@ -185,7 +183,10 @@ Decoder (총 18개)
   - Multi-Head Cross-Attention 뒤 1개
   - Feed-Forward Network 뒤 1개
 - 총 6개 블록 → 3 × 6 = 18개
+  
 
+## 결과
+<img width="1591" height="541" alt="스크린샷 2025-07-22 오후 12 52 09" src="https://github.com/user-attachments/assets/16577522-454e-47ff-8a74-dc5c14f1dc37" />
 
 * 모델 성능 비교
 
