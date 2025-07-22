@@ -45,12 +45,26 @@
 ### PostLayerNorm(Vanila)
 <img width="224" height="501" alt="스크린샷 2025-07-22 오후 12 33 26" src="https://github.com/user-attachments/assets/e04d3f19-48c5-4e9c-8db8-fd6cec6d6389" />
 
-### PreLayerNrom
+### PreLayerNorm
 <img width="219" height="473" alt="스크린샷 2025-07-22 오후 12 34 36" src="https://github.com/user-attachments/assets/52b35e65-47db-4033-9be8-33f3bb32c8e4" />
 
 ### DyT(Dynamic Tanh)
 <img width="337" height="194" alt="스크린샷 2025-07-22 오후 12 37 30" src="https://github.com/user-attachments/assets/3e5523db-3d7e-480b-aa54-520cb2036e6c" />
 
+### PreLayerNorm과 DyT의 Layer 형상 비교
+<img width="857" height="586" alt="스크린샷 2025-07-22 오후 12 40 38" src="https://github.com/user-attachments/assets/d1e51137-a46d-4fb9-9697-218e35206c93" />
+
+## 결과
+<img width="2178" height="321" alt="스크린샷 2025-07-22 오후 12 45 53" src="https://github.com/user-attachments/assets/f81162bb-5d9c-4a63-b69b-6c8e1a9098af" />
+
+*  모델 성능 비교
+
+| 모델            | Train Loss ↓ | Val Loss ↓ | BLEU ↑  |
+|-----------------|--------------|------------|---------|
+| PostLayerNorm   | 5.74         | 6.2        | 0.00    |
+| PreLayerNorm    | 0.55         | 2.1        | 0.26    |
+| DyT_Decoder     | 0.45         | 1.74       | 0.31    |
+| DyT             | 0.85         | 2.4        | 0.22    |
 
 
 ### Reference
