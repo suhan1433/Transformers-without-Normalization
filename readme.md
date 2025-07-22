@@ -2,7 +2,8 @@
 트랜스포머 학습 속도 향상을 위해 Layer Norm의 위치 변경 및 Dynamic Tanh으로 교체 실험
 
 ### 개요
-트랜스포머의 학습 속도를 향상시키기 위해, LayerNorm 연산에서 발생하는 병목 현상을 Dynamic Tanh로 교체하여 해결하는 실험을 진행했습니다.
+트랜스포머 모델의 학습 효율성을 향상시키기 위해, 기존 LayerNorm의 계산 복잡도 및 병렬화 제약 문제를 Dynamic Tanh (DyT) 정규화 기법으로 대체하는 실험을 수행했습니다. 
+LayerNorm의 통계량 계산 오버헤드와 GPU 동기화 비용을 element-wise 연산 기반의 DyT로 해결하여, 모델 성능 유지와 동시에 훈련 속도 개선을 목표로 합니다.
 
 약 2만 7천 개의 영어-독일어 번역 데이터셋을 활용하여, Loss 수렴 속도와 BLEU 점수를 평가했습니다.
 
@@ -16,7 +17,7 @@
 | **주요 단점** | • 긴 Warm-up 필요<br>• 학습 초기 불안정<br>• Gradient explosion 위험 | • 기존 PreNorm 모델과의 호환성 | • 상대적으로 새로운 기법<br>• 검증 사례가 제한적 |
 | **현재 상태** | 초기 Transformer 모델에서 사용 | 현재 대부분 모델의 표준 | 연구 단계의 새로운 접근법 |
 
-### 방법론
+### LayerNorm vs DyT
 Dynamic tanh: 단순한 element-wise 연산 → 병렬화 쉬움
 - DyT는 `γ * tanh(α * x) + β`  모든 파라미터(`α`, `γ`, `β`) 재조정 필요
 
@@ -188,12 +189,14 @@ class DyT(nn.Module):
   - DyT는 LayerNorm과 **완전히 다른 파라미터 구조**를 가짐:
     - LayerNorm: `γ * (정규화) + β` 
     - DyT: `γ * tanh(α * x) + β` 
-  - Pre-trained 모델의 Fine-tuning** 시:
+  - Pre-trained 모델의 Fine-tuning 시:
     - 새로운 `α` 파라미터 초기화 및 모든 파라미터(`α`, `γ`, `β`) 재조정 필요
     - 아키텍처 변경으로 인한 추가적인 학습 비용 발생
-  - Inference 적용** 시에도 동일한 문제
+  - Inference 적용 시에도 동일한 문제
 
 ### Reference
 [https://arxiv.org/abs/2503.1062](https://arxiv.org/abs/2503.10622) : Transformers without Normalization
 
 https://arxiv.org/pdf/2002.04745 : On Layer Normalization in the Transformer Architecture
+
+https://julianhatzky.me/blog/2025/tanh/?utm_source=chatgpt.com
