@@ -55,7 +55,7 @@
 <img width="857" height="586" alt="스크린샷 2025-07-22 오후 12 40 38" src="https://github.com/user-attachments/assets/d1e51137-a46d-4fb9-9697-218e35206c93" />
 
 ## 결과
-<img width="2178" height="321" alt="스크린샷 2025-07-22 오후 12 45 53" src="https://github.com/user-attachments/assets/f81162bb-5d9c-4a63-b69b-6c8e1a9098af" />
+<img width="1591" height="541" alt="스크린샷 2025-07-22 오후 12 52 09" src="https://github.com/user-attachments/assets/16577522-454e-47ff-8a74-dc5c14f1dc37" />
 
 *  모델 성능 비교
 
