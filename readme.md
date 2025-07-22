@@ -49,12 +49,85 @@ LayerNorm: 평균/분산 계산 필요 → 계산 비용 높음
 
 ### PostLayerNorm(Vanila)
 <img width="224" height="501" alt="스크린샷 2025-07-22 오후 12 33 26" src="https://github.com/user-attachments/assets/e04d3f19-48c5-4e9c-8db8-fd6cec6d6389" />
+```python
+        self.attn = MultiHead(hidden_size, n_splits)
+        self.attn_norm = nn.LayerNorm(hidden_size)
+        self.attn_dropout = nn.Dropout(dropout_p)
+
+        # feedforward
+        self.fc = nn.Sequential(
+            # 512 * 4 = 2048
+            nn.Linear(hidden_size, hidden_size * 4),
+            nn.LeakyReLU() if use_leaky_relu else nn.ReLU(),
+            nn.Linear(hidden_size * 4, hidden_size)
+        )
+
+        self.fc_norm = nn.LayerNorm(hidden_size)
+        self.fc_dropout = nn.Dropout(dropout_p)
+    
+    def forward(self, x, mask):
+        # Post-LN
+        z = self.attn_norm(x + self.attn_dropout(self.attn(Q=x, K=x, V=x, mask = mask)))
+        z = self.fc_norm(z + self.fc_dropout(self.fc(z)))
+
+        return z, mask
+
+
+```
 
 ### PreLayerNorm
 <img width="219" height="473" alt="스크린샷 2025-07-22 오후 12 34 36" src="https://github.com/user-attachments/assets/52b35e65-47db-4033-9be8-33f3bb32c8e4" />
+```python
+        self.attn = MultiHead(hidden_size, n_splits)
+        self.attn_norm = nn.LayerNorm(hidden_size)
+        self.attn_dropout = nn.Dropout(dropout_p)
+
+        # feedforward
+        self.fc = nn.Sequential(
+            # 512 * 4 = 2048
+            nn.Linear(hidden_size, hidden_size * 4),
+            nn.LeakyReLU() if use_leaky_relu else nn.ReLU(),
+            nn.Linear(hidden_size * 4, hidden_size)
+        )
+
+        self.fc_norm = nn.LayerNorm(hidden_size)
+        self.fc_dropout = nn.Dropout(dropout_p)
+    def forward(self, x, mask):        
+        # Pre-LN
+        z = self.attn_norm(x)
+        z = x + self.attn_dropout(self.attn(Q=z, K=z, V=z, mask = mask))
+        z = z + self.fc_dropout(self.fc(self.fc_norm(z)))
+
+        return z, mask
+```
 
 ### DyT(Dynamic Tanh)
 <img width="337" height="194" alt="스크린샷 2025-07-22 오후 12 37 30" src="https://github.com/user-attachments/assets/3e5523db-3d7e-480b-aa54-520cb2036e6c" />
+```python
+        self.attn = MultiHead(hidden_size, n_splits)
+        self.attn_norm = nn.LayerNorm(hidden_size)
+        self.attn_dropout = nn.Dropout(dropout_p)
+
+        # feedforward
+        self.fc = nn.Sequential(
+            # 512 * 4 = 2048
+            nn.Linear(hidden_size, hidden_size * 4),
+            nn.LeakyReLU() if use_leaky_relu else nn.ReLU(),
+            nn.Linear(hidden_size * 4, hidden_size)
+        )
+
+        self.fc_norm = nn.LayerNorm(hidden_size)
+        self.fc_dropout = nn.Dropout(dropout_p)
+
+    def forward(self, x, mask):
+        # DyT
+        z = self.attn_dyt(x)
+        z = x + self.attn_dropout(self.attn(Q=z, K=z, V=z, mask = mask))
+        z = z + self.fc_dropout(self.fc(self.fc_dyt(z)))
+
+        return z, mask
+```
+
 
 ### PreLayerNorm과 DyT의 Layer 형상 비교
 <img width="857" height="586" alt="스크린샷 2025-07-22 오후 12 40 38" src="https://github.com/user-attachments/assets/d1e51137-a46d-4fb9-9697-218e35206c93" />
