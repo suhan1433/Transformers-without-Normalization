@@ -42,8 +42,11 @@
 | `Optimizer`      | `Adam(모멘텀=0.9, β2=0.98, eps=1e-9)` |
 
 
+### PostLayerNorm(Vanila)
+<img width="224" height="501" alt="스크린샷 2025-07-22 오후 12 33 26" src="https://github.com/user-attachments/assets/e04d3f19-48c5-4e9c-8db8-fd6cec6d6389" />
 
-
+### PreLayerNrom
+<img width="219" height="473" alt="스크린샷 2025-07-22 오후 12 34 36" src="https://github.com/user-attachments/assets/52b35e65-47db-4033-9be8-33f3bb32c8e4" />
 
 
 ### Reference
