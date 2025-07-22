@@ -18,7 +18,26 @@
 
 ### 방법론
 Dynamic tanh: 단순한 element-wise 연산 → 병렬화 쉬움
+- DyT는 `γ * tanh(α * x) + β`  모든 파라미터(`α`, `γ`, `β`) 재조정 필요
+
 LayerNorm: 평균/분산 계산 필요 → 계산 비용 높음
+
+```python
+import torch
+import torch.nn as nn
+
+class DyT(nn.Module):
+    def __init__(self, num_features, alpha_init_value=0.5):
+        super().__init__()
+        
+        self.alpha = nn.Parameter(torch.ones(1) * alpha_init_value)
+        self.weight = nn.Parameter(torch.ones(num_features))
+        self.bias = nn.Parameter(torch.zeros(num_features))
+    
+    def forward(self, x):
+        x = torch.tanh(self.alpha * x)
+        return x * self.weight + self.bias
+```
 
 ## 실험 
 
@@ -164,15 +183,15 @@ LayerNorm: 평균/분산 계산 필요 → 계산 비용 높음
 - 대규모 모델에서의 성능 문제
   - 여러 아티클을 검토한 결과, 대규모 모델에서는 DyT의 성능이 LayerNorm 대비 오히려 저하되는 경우가 확인됨
   - 현재까지 검증된 사례가 제한적이어서 실제 프로덕션 환경 적용에는 검토 필요
-
-- Fine-tuning 및 Inference 적용의 제약
-  - DyT는 `tanh(ax)`에서 스케일링 파라미터 `a`를 학습해야 하는 구조
-  - Pre-trained 모델의 Fine-tuning 시:
-    - 기존 LayerNorm 가중치와 호환되지 않아 아키텍처 변경 필요
-    - `a` 파라미터 초기화 및 재학습으로 인한 추가적인 학습 비용 발생
-    - Inference할때도 동일한 문제
   
-
+- Fine-tuning 및 Inference 적용의 제약
+  - DyT는 LayerNorm과 **완전히 다른 파라미터 구조**를 가짐:
+    - LayerNorm: `γ * (정규화) + β` 
+    - DyT: `γ * tanh(α * x) + β` 
+  - Pre-trained 모델의 Fine-tuning** 시:
+    - 새로운 `α` 파라미터 초기화 및 모든 파라미터(`α`, `γ`, `β`) 재조정 필요
+    - 아키텍처 변경으로 인한 추가적인 학습 비용 발생
+  - Inference 적용** 시에도 동일한 문제
 
 ### Reference
 [https://arxiv.org/abs/2503.1062](https://arxiv.org/abs/2503.10622) : Transformers without Normalization
