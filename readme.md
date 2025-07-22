@@ -57,15 +57,21 @@
 ## 결과
 <img width="1591" height="541" alt="스크린샷 2025-07-22 오후 12 52 09" src="https://github.com/user-attachments/assets/16577522-454e-47ff-8a74-dc5c14f1dc37" />
 
-*  모델 성능 비교
+* 모델 성능 비교
 
-| 모델            | Train Loss ↓ | Val Loss ↓ | BLEU ↑  |
-|-----------------|--------------|------------|---------|
-| PostLayerNorm   | 5.74         | 6.2        | 0.00    |
-| PreLayerNorm    | 0.55         | 2.1        | 0.26    |
-| DyT_Decoder     | 0.45         | 1.74       | 0.31    |
-| DyT             | 0.85         | 2.4        | 0.22    |
+| 모델            | Train Loss ↓ | Val Loss ↓ | BLEU ↑  | Epoch | 수렴 속도 |
+|-----------------|--------------|------------|---------|-------|-----------|
+| PostLayerNorm   | 5.74         | 10.2       | 0.00    | 4     | 매우 느림  |
+| PreLayerNorm    | 0.55         | 2.1        | 0.26    | 18    | 보통      |
+| DyT_Decoder     | 0.87         | 1.74       | 0.31    | 9     | ⚡ 빠름   |
+| DyT_Encoder     | 0.76         | 1.78       | 0.29    | 9     | ⚡ 빠름   |
+| DyT             | 0.85         | 2.4        | 0.22    | 22    | 느림      |
 
+주요 관찰 사항:
+- **DyT_Decoder**가 전체적으로 가장 우수한 성능을 보임 (Val Loss: 1.74, BLEU: 0.31)
+- **DyT_Encoder**와 **DyT_Decoder** 모두 9 epoch만에 우수한 성능에 도달하여 빠른 수렴 속도를 보임
+- PreLayerNorm 대비 DyT 계열 모델들은 2배 빠른 수렴 속도 달성
+- PostLayerNorm은 학습이 제대로 이루어지지 않음 (BLEU: 0.00)
 
 ### Reference
 [https://arxiv.org/abs/2503.1062](https://arxiv.org/abs/2503.10622) : Transformers without Normalization
