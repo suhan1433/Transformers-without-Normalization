@@ -48,6 +48,10 @@
 ### PreLayerNrom
 <img width="219" height="473" alt="스크린샷 2025-07-22 오후 12 34 36" src="https://github.com/user-attachments/assets/52b35e65-47db-4033-9be8-33f3bb32c8e4" />
 
+### DyT(Dynamic Tanh)
+<img width="337" height="194" alt="스크린샷 2025-07-22 오후 12 37 30" src="https://github.com/user-attachments/assets/3e5523db-3d7e-480b-aa54-520cb2036e6c" />
+
+
 
 ### Reference
 [https://arxiv.org/abs/2503.1062](https://arxiv.org/abs/2503.10622) : Transformers without Normalization
