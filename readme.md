@@ -49,6 +49,7 @@ LayerNorm: 평균/분산 계산 필요 → 계산 비용 높음
 
 ### PostLayerNorm(Vanila)
 <img width="224" height="501" alt="스크린샷 2025-07-22 오후 12 33 26" src="https://github.com/user-attachments/assets/e04d3f19-48c5-4e9c-8db8-fd6cec6d6389" />
+
 ```python
         self.attn = MultiHead(hidden_size, n_splits)
         self.attn_norm = nn.LayerNorm(hidden_size)
@@ -71,12 +72,11 @@ LayerNorm: 평균/분산 계산 필요 → 계산 비용 높음
         z = self.fc_norm(z + self.fc_dropout(self.fc(z)))
 
         return z, mask
-
-
 ```
 
 ### PreLayerNorm
 <img width="219" height="473" alt="스크린샷 2025-07-22 오후 12 34 36" src="https://github.com/user-attachments/assets/52b35e65-47db-4033-9be8-33f3bb32c8e4" />
+
 ```python
         self.attn = MultiHead(hidden_size, n_splits)
         self.attn_norm = nn.LayerNorm(hidden_size)
@@ -103,6 +103,7 @@ LayerNorm: 평균/분산 계산 필요 → 계산 비용 높음
 
 ### DyT(Dynamic Tanh)
 <img width="337" height="194" alt="스크린샷 2025-07-22 오후 12 37 30" src="https://github.com/user-attachments/assets/3e5523db-3d7e-480b-aa54-520cb2036e6c" />
+
 ```python
         self.attn = MultiHead(hidden_size, n_splits)
         self.attn_norm = nn.LayerNorm(hidden_size)
