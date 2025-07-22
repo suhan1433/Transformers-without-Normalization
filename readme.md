@@ -7,7 +7,7 @@ LayerNorm의 통계량 계산 오버헤드와 GPU 동기화 비용을 element-wi
 
 약 2만 7천 개의 영어-독일어 번역 데이터셋을 활용하여, Loss 수렴 속도와 BLEU 점수를 평가했습니다.
 
-### Transformer 정규화 방식 비교
+## Transformer 정규화 방식 비교
 
 | 구분 | PostLayerNorm (Vanilla) | PreLayerNorm | Dynamic Tanh (DyT) |
 |------|-------------------------|--------------|-------------------|
@@ -17,11 +17,26 @@ LayerNorm의 통계량 계산 오버헤드와 GPU 동기화 비용을 element-wi
 | **주요 단점** | • 긴 Warm-up 필요<br>• 학습 초기 불안정<br>• Gradient explosion 위험 | • 기존 PreNorm 모델과의 호환성 | • 상대적으로 새로운 기법<br>• 검증 사례가 제한적 |
 | **현재 상태** | 초기 Transformer 모델에서 사용 | 현재 대부분 모델의 표준 | 연구 단계의 새로운 접근법 |
 
-### LayerNorm vs DyT
-Dynamic tanh: 단순한 element-wise 연산 → 병렬화 쉬움
-- DyT는 `γ * tanh(α * x) + β`  모든 파라미터(`α`, `γ`, `β`) 재조정 필요
+## LayerNorm vs DyT
+### LayerNorm의 동작 방식
+```
+LayerNorm(x) = γ * (x - μ) / √(σ² + ε) + β
+```
+- **μ, σ²**: 입력의 평균, 분산 (전체 feature에 대해 계산 필요)
+- **γ, β**: 학습 가능한 스케일링/시프트 파라미터
 
-LayerNorm: 평균/분산 계산 필요 → 계산 비용 높음
+### 주요 문제점
+1. **순차적 계산**: 평균 → 분산 → 정규화 단계별 진행
+2. **전역 의존성**: 모든 element가 평균/분산에 의존
+3. **GPU 동기화**: 통계량 계산 시 메모리 동기화 필요
+
+### DyT의 해결책
+```
+DyT(x) = γ * tanh(α * x) + β
+```
+- **Element-wise 독립 연산**: 각 요소를 병렬로 동시 처리
+- **통계량 계산 불필요**: 평균/분산 계산 과정 제거
+- **완전한 병렬화**: GPU 코어 간 동기화 없이 처리
 
 ```python
 import torch
