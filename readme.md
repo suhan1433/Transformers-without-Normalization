@@ -40,6 +40,7 @@
 | `Scheduler`      | `CosineAnnealingLR`               |
 | `활성화 함수`     | `ReLU`                             |
 | `Optimizer`      | `Adam(모멘텀=0.9, β2=0.98, eps=1e-9)` |
+| `warmup`       | `False` |
 
 
 ### PostLayerNorm(Vanila)
@@ -61,11 +62,18 @@
 
 | 모델            | Train Loss ↓ | Val Loss ↓ | BLEU ↑  | Epoch | 수렴 속도 |
 |-----------------|--------------|------------|---------|-------|-----------|
-| PostLayerNorm   | 5.74         | 10.2       | 0.00    | 4     | 매우 느림  |
+| PostLayerNorm   | 5.74         | 10.2       | 0.00    | 4     | 매우 느림  |  
 | PreLayerNorm    | 0.55         | 2.1        | 0.26    | 18    | 보통      |
 | DyT_Decoder     | 0.87         | 1.74       | 0.31    | 9     | ⚡ 빠름   |
 | DyT_Encoder     | 0.76         | 1.78       | 0.29    | 9     | ⚡ 빠름   |
 | DyT             | 0.85         | 2.4        | 0.22    | 22    | 느림      |
+
+모델 설명:
+- PostLayerNorm : LayerNorm → Residual Connection
+- PreLayerNorm : Residual Connection → LayerNorm
+- DyT_Decoder : PreLayerNorm 구조에서 디코더의 LayerNorm만 DyT로 변경
+- DyT_Encoder : PreLayerNorm 구조에서 인코더의 LayerNorm만 DyT로 변경
+- DyT : PreLayerNorm 구조에서 인코더, 디코더 LayerNorm을 전부 DyT로 변경
 
 주요 관찰 사항:
 - **DyT_Decoder**가 전체적으로 가장 우수한 성능을 보임 (Val Loss: 1.74, BLEU: 0.31)
