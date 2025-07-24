@@ -294,6 +294,8 @@ x → Sublayer → (+residual) → LayerNorm → output
 **역전파 계산:**
 $\frac{\partial L}{\partial x_i} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial x_i}$
 
+`y = LayerNorm((x + sublayer(x)))`이므로:
+
 여기서 LayerNorm의 편미분:
 $\frac{\partial y_i}{\partial x_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(x_i - \mu)(x_j - \mu)}{\sigma^2 N} \right]$
 
@@ -313,9 +315,7 @@ x → LayerNorm → Sublayer → (+x) → output
 **역전파 계산:**
 $$\frac{\partial L}{\partial x} = \frac{\partial L}{\partial \text{output}} \cdot \frac{\partial \text{output}}{\partial x}$$
 
-여기서 `output = x + sublayer(LayerNorm(x))`이므로:
-
-$$\frac{\partial \text{output}}{\partial x} = \frac{\partial x}{\partial x} + \frac{\partial \text{sublayer}}{\partial \text{LayerNorm}_\text{out}} \cdot \frac{\partial \text{LayerNorm}_\text{out}}{\partial x}$$
+`output = x + sublayer(LayerNorm(x))`이므로:
 
 $\frac{\partial \text{output}}{\partial x} = \frac{\partial x}{\partial x} + \frac{\partial \text{sublayer}}{\partial \text{LayerNorm}\,\text{out}} \cdot \frac{\partial \text{LayerNorm}\,\text{out}}{\partial x}$
 
