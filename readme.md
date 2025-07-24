@@ -44,8 +44,8 @@ GPU의 한 Block이 해당 토큰 임베딩 전체를 담당합니다.
 예: 512차원 → 16개의 Warp(각 32차원씩)
 2. 평균 및 분산 계산 과정
 각 Thread는 자신이 맡은 차원의 값을 처리합니다.
-평균 및 분산 계산을 위해 Block 내의 모든 Thread가 값을 Shared Memory에 모아 합산합니다.
-합산 결과를 Block 내 모든 Thread가 공유해야 하므로,
+평균 및 분산 계산을 위해 Block 내의 모든 Thread가 값을 Shared Memory에 모아 reduction연산을 합니다.
+이 결과를 Block 내 모든 Thread가 공유해야 하므로,
 Thread 동기화(Synchronization)가 필요합니다.
 3. 정규화 및 결과 전달
 계산된 평균/분산을 이용해 각 Thread가 자신이 맡은 차원을 정규화합니다.
