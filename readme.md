@@ -278,7 +278,14 @@ Decoder (총 18개)
   - Inference 적용 시에도 동일한 문제
 
 ## Appendix
-Post일 때 기울기 소실 문제
+- Post일 때 기울기 소실 문제
+
+- Pre일 때 기울기 폭발 문제
+Pre-LN을 역전파 과정을 보면
+
+* x → [LayerNorm → Sublayer] → (+x) → output
+* ∂L/∂x = ∂L/∂output · ∂output/∂x
+* output = x + sublayer(LayerNorm(x))
 
 
 ### Reference
