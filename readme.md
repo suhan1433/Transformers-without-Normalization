@@ -317,6 +317,8 @@ $$\frac{\partial L}{\partial x} = \frac{\partial L}{\partial \text{output}} \cdo
 
 $$\frac{\partial \text{output}}{\partial x} = \frac{\partial x}{\partial x} + \frac{\partial \text{sublayer}}{\partial \text{LayerNorm}_\text{out}} \cdot \frac{\partial \text{LayerNorm}_\text{out}}{\partial x}$$
 
+$\frac{\partial \text{output}}{\partial x} = \frac{\partial x}{\partial x} + \frac{\partial \text{sublayer}}{\partial \text{LayerNorm}\,\text{out}} \cdot \frac{\partial \text{LayerNorm}\,\text{out}}{\partial x}$
+
 $$= 1 + \text{LayerNorm을 거친 편미분}$$
 
 **특징:**
