@@ -355,7 +355,6 @@ $$= 1 + \text{LayerNorm을 거친 편미분}$$
 
 - **Post-LayerNorm**: 전체 기울기가 LayerNorm 편미분에 의존하여 분산 값에 따른 기울기 소실 또는 폭발 가능
 - **Pre-LayerNorm**: 잔차 연결로 인한 상수항 `1`이 항상 보장되어 완전한 기울기 소실 방지
-- 이러한 수학적 안정성 때문에 현대 Transformer 모델들이 Pre-LayerNorm을 선호
 
 ### Reference
 [https://arxiv.org/abs/2503.1062](https://arxiv.org/abs/2503.10622) : Transformers without Normalization
