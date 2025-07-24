@@ -284,8 +284,6 @@ Decoder (총 18개)
 - **Post**: 잔차 연결 후 LayerNorm이므로 모든 기울기가 LayerNorm의 편미분을 거쳐야 함
 - **Pre**: 잔차 연결이 LayerNorm을 우회하므로 일부 기울기가 직접 전파 가능
 
-## Post-LayerNorm vs Pre-LayerNorm 기울기 전파 비교
-
 ### Post-LayerNorm의 역전파 과정
 
 **구조:**
