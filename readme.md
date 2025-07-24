@@ -48,17 +48,19 @@ Thread 동기화(Synchronization)가 필요합니다.
 3. 정규화 및 결과 전달
 계산된 평균/분산을 이용해 각 Thread가 자신이 맡은 차원을 정규화합니다.
 최종 결과는 다시 각 Thread를 통해 출력됩니다.
-SM (Streaming Multiprocessor):
+
+- SM (Streaming Multiprocessor):
 GPU의 연산 유닛. 여러 Block을 동시에 실행할 수 있음.
-Kernel:
+- Kernel:
 GPU에서 실행되는 함수(연산 단위). Grid 단위로 실행됨.
-Grid:
+- Grid:
 여러 Block으로 구성된 Kernel 실행 단위.
-Block:
+- Block:
 여러 Thread로 구성. 한 Block이 한 토큰 임베딩을 담당.
-Warp:
+- Warp:
 32개의 Thread로 구성된 실행 단위. Block 내에서 차원별로 분배됨.
 
+<img width="906" height="366" alt="스크린샷 2025-07-24 오후 5 37 00" src="https://github.com/user-attachments/assets/bd7aefe2-1d34-447d-adf2-ae54cf17f081" />
 
 - 요약 
 LayerNorm 연산 시,
@@ -274,3 +276,5 @@ Decoder (총 18개)
 https://arxiv.org/pdf/2002.04745 : On Layer Normalization in the Transformer Architecture
 
 https://julianhatzky.me/blog/2025/tanh/?utm_source=chatgpt.com
+
+https://xoft.tistory.com/75 : GPU 구조 
