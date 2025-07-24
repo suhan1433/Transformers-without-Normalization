@@ -71,8 +71,7 @@ GPU에서 실행되는 함수(연산 단위). Grid 단위로 실행됨.
 LayerNorm 연산 시,
 한 Block이 한 토큰 임베딩을 담당하고,
 여러 Warp가 임베딩 차원을 분할 처리합니다.
-평균/분산 계산을 위해 Block 내 Thread 동기화가 필요합니다.
-이 구조는 GPU의 병렬 처리 효율을 극대화합니다.
+또한 평균/분산 계산을 위해 Block 내 Thread 동기화가 필요합니다.
 https://github.com/NVIDIA/apex/blob/master/csrc/layer_norm_cuda_kernel.cu : 과정
 
 
