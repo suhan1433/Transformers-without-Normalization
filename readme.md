@@ -63,6 +63,8 @@ GPU에서 실행되는 함수(연산 단위). Grid 단위로 실행됨.
 32개의 Thread로 구성된 실행 단위. Block 내에서 차원별로 분배됨.
 
 <img width="906" height="366" alt="스크린샷 2025-07-24 오후 5 37 00" src="https://github.com/user-attachments/assets/bd7aefe2-1d34-447d-adf2-ae54cf17f081" />
+<img width="438" height="555" alt="스크린샷 2025-07-24 오후 5 45 21" src="https://github.com/user-attachments/assets/e1854b82-1880-4c85-a1a1-4eedf220d24c" />
+
 
 - 요약 
 LayerNorm 연산 시,
