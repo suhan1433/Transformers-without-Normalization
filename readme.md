@@ -281,4 +281,8 @@ https://arxiv.org/pdf/2002.04745 : On Layer Normalization in the Transformer Arc
 
 https://julianhatzky.me/blog/2025/tanh/?utm_source=chatgpt.com
 
-https://xoft.tistory.com/75 : GPU 구조 
+GPU 구조 
+https://xoft.tistory.com/75 
+https://cuda-programming.blogspot.com/2013/01/thread-and-block-heuristics-in-cuda.html
+https://dlsys.cs.washington.edu/pdf/lecture5.pdf
+
