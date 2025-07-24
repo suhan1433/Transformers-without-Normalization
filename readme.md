@@ -292,12 +292,18 @@ x → Sublayer → (+residual) → LayerNorm → output
 ```
 
 **역전파 계산:**
-$\frac{\partial L}{\partial x_i} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial x_i}$
+$$\frac{\partial L}{\partial x_i} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial (x + \text{sublayer}(x))} \cdot \frac{\partial (x + \text{sublayer}(x))}{\partial x_i}$$
 
-`y = LayerNorm((x + sublayer(x)))`이므로:
+여기서:
+- `y = LayerNorm(x + sublayer(x))`
+- $\frac{\partial (x + \text{sublayer}(x))}{\partial x_i} = 1 + \frac{\partial \text{sublayer}(x)}{\partial x_i}$
+
+따라서 전체 편미분은:
+$$\frac{\partial L}{\partial x_i} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial (x + \text{sublayer}(x))} \cdot \left(1 + \frac{\partial \text{sublayer}(x)}{\partial x_i}\right)$$
 
 여기서 LayerNorm의 편미분:
-$\frac{\partial y_i}{\partial x_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(x_i - \mu)(x_j - \mu)}{\sigma^2 N} \right]$
+$$\frac{\partial y_i}{\partial (x + \text{sublayer}(x))_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(z_i - \mu)(z_j - \mu)}{\sigma^2 N} \right]$$
+(단, $z = x + \text{sublayer}(x)$)
 
 **특징:**
 - 모든 기울기가 LayerNorm의 편미분 $\frac{\gamma}{\sigma}$에 의존
