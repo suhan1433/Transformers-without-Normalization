@@ -305,8 +305,9 @@ $$\frac{\partial L}{\partial x_i} = \frac{\partial L}{\partial y} \cdot \frac{\p
 $\frac{\partial y_i}{\partial (x + \text{sublayer}(x))_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(z_i - \mu)(z_j - \mu)}{\sigma^2 N} \right]$  
 (단, $z = x + \text{sublayer}(x)$)
 
-$$\frac{\partial y_i}{\partial (x + \text{sublayer}(x))_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(z_i - \mu)(z_j - \mu)}{\sigma^2 N} \right]$$  
-(단, \( z = x + \text{sublayer}(x) \))
+$$\frac{\partial y_i}{\partial (x + \text{sublayer}(x))_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(z_i - \mu)(z_j - \mu)}{\sigma^2 N} \right]$$
+
+(단, $z = x + \text{sublayer}(x)$)
 
 
 **특징:**
