@@ -26,11 +26,47 @@ LayerNorm(x) = γ * (x - μ) / √(σ² + ε) + β
 - **μ, σ²**: 입력의 평균, 분산 (전체 feature에 대해 계산 필요)
 - **γ, β**: 학습 가능한 스케일링/시프트 파라미터
 
+<img width="323" height="350" alt="스크린샷 2025-07-24 오후 5 11 21" src="https://github.com/user-attachments/assets/044ccc1c-3e74-4837-9f4f-cd5853a7e3b5" />
+
 ### 주요 문제점
 1. **순차적 계산**: 평균 → 분산 → 정규화 단계별 진행
-2. **전역 의존성**: 모든 element가 평균/분산에 의존
+2. **전역 의존성**: 각 요소의 정규화는 전체 임베딩 차원(feature)값들의 평균과 분산에 의존
 3. **GPU 동기화**: 통계량 계산 시 메모리 동기화 필요
-아래 추가내용에 자세한 내용 추가
+
+
+1. 연산 단위 할당
+한 개의 토큰 임베딩(예: 512차원)에 대해 LayerNorm 연산을 수행할 때,
+GPU의 한 Block이 해당 토큰 임베딩 전체를 담당합니다.
+임베딩 차원(예: 512)을 Warp(32 threads) 단위로 나누어 각 Warp가 일부 차원을 처리합니다.
+예: 512차원 → 16개의 Warp(각 32차원씩)
+2. 평균 및 분산 계산 과정
+각 Thread는 자신이 맡은 차원의 값을 처리합니다.
+평균 및 분산 계산을 위해 Block 내의 모든 Thread가 값을 Shared Memory에 모아 합산합니다.
+합산 결과를 Block 내 모든 Thread가 공유해야 하므로,
+Thread 동기화(Synchronization)가 필요합니다.
+3. 정규화 및 결과 전달
+계산된 평균/분산을 이용해 각 Thread가 자신이 맡은 차원을 정규화합니다.
+최종 결과는 다시 각 Thread를 통해 출력됩니다.
+SM (Streaming Multiprocessor):
+GPU의 연산 유닛. 여러 Block을 동시에 실행할 수 있음.
+Kernel:
+GPU에서 실행되는 함수(연산 단위). Grid 단위로 실행됨.
+Grid:
+여러 Block으로 구성된 Kernel 실행 단위.
+Block:
+여러 Thread로 구성. 한 Block이 한 토큰 임베딩을 담당.
+Warp:
+32개의 Thread로 구성된 실행 단위. Block 내에서 차원별로 분배됨.
+
+
+- 요약 
+LayerNorm 연산 시,
+한 Block이 한 토큰 임베딩을 담당하고,
+여러 Warp가 임베딩 차원을 분할 처리합니다.
+평균/분산 계산을 위해 Block 내 Thread 동기화가 필요합니다.
+이 구조는 GPU의 병렬 처리 효율을 극대화합니다.
+https://github.com/NVIDIA/apex/blob/master/csrc/layer_norm_cuda_kernel.cu : 과정
+
 
 ### DyT의 해결책
 ```
@@ -229,7 +265,6 @@ Decoder (총 18개)
     - 아키텍처 변경으로 인한 추가적인 학습 비용 발생
   - Inference 적용 시에도 동일한 문제
 
-## 추가내용
 
 
 ### Reference
