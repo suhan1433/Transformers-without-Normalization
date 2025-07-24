@@ -315,23 +315,19 @@ $\frac{\partial L}{\partial x} = \frac{\partial L}{\partial \text{output}} \cdot
 
 여기서 `output = x + sublayer(LayerNorm(x))`이므로:
 
-$\frac{\partial \text{output}}{\partial x} = \frac{\partial x}{\partial x} + \frac{\partial \text{sublayer}}{\partial \text{LayerNorm}_\text{out}} \cdot \frac{\partial \text{LayerNorm}_\text{out}}{\partial x}$
-
-$= 1 + \text{LayerNorm을 거친 편미분}$
+$\frac{\partial \text{output}}{\partial x} = \frac{\partial x}{\partial x} + \frac{\partial \text{sublayer}}{\partial \text{LayerNorm}_\text{out}} \cdot \frac{\partial \text{LayerNorm}_\text{out}}{\partial x}$$= 1 + \text{LayerNorm을 거친 편미분}$
 
 **특징:**
 - **직접 경로**: 상수항 `1`이 항상 보장됨 (잔차 연결)
 - **LayerNorm 경로**: 여전히 분산에 따른 변동 가능
 - 전체 기울기 = `1 + (변동 가능한 항)`
 
-### 기울기 안정성 비교
+### Post, Pre 비교
 
 | 구조 | 기울기 특성 | 주요 문제 |
 |------|-------------|-----------|
 | **Post-LayerNorm** | 전체 기울기가 $\frac{\gamma}{\sigma}$에 의존 | 분산에 따른 소실/폭발 |
-| **Pre-LayerNorm** | 최소 `1`의 기울기 보장 | 소실 방지, 폭발은 일부 경로에서만 |
-
-### 실제적 의미
+| **Pre-LayerNorm** | 최소 `1`의 기울기 보장 | 소실 방지, 폭발 가능성 있음 |
 
 1. **Post-LayerNorm**:
    - 깊은 네트워크에서 기울기가 층마다 $\frac{\gamma}{\sigma}$ 배수로 변화
@@ -342,7 +338,7 @@ $= 1 + \text{LayerNorm을 거친 편미분}$
    - LayerNorm 경로에서만 분산 의존적 변화 발생
    - 전체적으로 안정적인 학습 가능
 
-## 결론
+### 결론
 
 - **Post-LayerNorm**: 전체 기울기가 LayerNorm 편미분에 의존하여 분산 값에 따른 기울기 소실 또는 폭발 가능
 - **Pre-LayerNorm**: 잔차 연결로 인한 상수항 `1`이 항상 보장되어 완전한 기울기 소실 방지
