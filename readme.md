@@ -66,8 +66,8 @@ GPU에서 실행되는 함수(연산 단위). Grid 단위로 실행됨.
 <img width="438" height="555" alt="스크린샷 2025-07-24 오후 5 45 21" src="https://github.com/user-attachments/assets/e1854b82-1880-4c85-a1a1-4eedf220d24c" />
 
 
+
 - 요약
-  
 LayerNorm 연산 시,
 한 Block이 한 토큰 임베딩을 담당하고,
 여러 Warp가 임베딩 차원을 분할 처리합니다.
