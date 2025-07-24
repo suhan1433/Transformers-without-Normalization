@@ -311,11 +311,13 @@ x → LayerNorm → Sublayer → (+x) → output
 ```
 
 **역전파 계산:**
-$\frac{\partial L}{\partial x} = \frac{\partial L}{\partial \text{output}} \cdot \frac{\partial \text{output}}{\partial x}$
+$$\frac{\partial L}{\partial x} = \frac{\partial L}{\partial \text{output}} \cdot \frac{\partial \text{output}}{\partial x}$$
 
 여기서 `output = x + sublayer(LayerNorm(x))`이므로:
 
-$\frac{\partial \text{output}}{\partial x} = \frac{\partial x}{\partial x} + \frac{\partial \text{sublayer}}{\partial \text{LayerNorm}_\text{out}} \cdot \frac{\partial \text{LayerNorm}_\text{out}}{\partial x}$$= 1 + \text{LayerNorm을 거친 편미분}$
+$$\frac{\partial \text{output}}{\partial x} = \frac{\partial x}{\partial x} + \frac{\partial \text{sublayer}}{\partial \text{LayerNorm}_\text{out}} \cdot \frac{\partial \text{LayerNorm}_\text{out}}{\partial x}$$
+
+$$= 1 + \text{LayerNorm을 거친 편미분}$$
 
 **특징:**
 - **직접 경로**: 상수항 `1`이 항상 보장됨 (잔차 연결)
