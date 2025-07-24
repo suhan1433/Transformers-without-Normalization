@@ -308,6 +308,12 @@ $\frac{\partial y_i}{\partial x_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - 
 (단, $z = x + \text{sublayer}(x)$)
 
 
+$$
+\frac{\partial y_i}{\partial z_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(z_i - \mu)(z_j - \mu)}{\sigma^2 N} \right]
+$$
+
+(단, $z = x + \text{sublayer}(x)$)
+
 **특징:**
 - 모든 기울기가 LayerNorm의 편미분 $\frac{\gamma}{\sigma}$에 의존
 - $\sigma$ (분산)에 따라 기울기 크기가 결정됨:
