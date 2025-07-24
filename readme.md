@@ -79,9 +79,14 @@ https://github.com/NVIDIA/apex/blob/master/csrc/layer_norm_cuda_kernel.cu : 과�
 ```
 DyT(x) = γ * tanh(α * x) + β
 ```
-- **Element-wise 독립 연산**: 각 요소를 병렬로 동시 처리
+- **Element-wise 독립 연산**: 각 요소를 병렬로 동시 처리(모든 Thread가 각자 맡은 값만 처리)
 - **통계량 계산 불필요**: 평균/분산 계산 과정 제거
-- **완전한 병렬화**: GPU 코어 간 동기화 없이 처리
+- **완전한 병렬화**: GPU Thread(코어) 간 동기화 없이 처리
+
+DyT의 경우 
+DyT의 경우 각 임베딩 값에 대해 학습 가능한 α를 곱해주기만 하면 되기에 독립적인 연산이 가능합니다.
+즉 평균 및 분산 계산을 위해 임베딩의 각 값을 Thread 간 동기화가 필요없습니다.
+
 
 ```python
 import torch
