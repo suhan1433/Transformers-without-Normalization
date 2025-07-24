@@ -277,16 +277,177 @@ Decoder (총 18개)
     - 아키텍처 변경으로 인한 추가적인 학습 비용 발생
   - Inference 적용 시에도 동일한 문제
 
-## Appendix
-- Post일 때 기울기 소실 문제
+## Appendix(Pre-LN, Post-LN의 기울기 소실, 증폭)
 
-- Pre일 때 기울기 폭발 문제
-Pre-LN을 역전파 과정을 보면
+Post-LN
+- Post-LN 역전파 과정을 보면
+
+- ∂xi​∂L​=∂y∂L​⋅∂xi​∂y​
+- ∂xj​∂yi​​=σγ​[δij​−N1​−σ2N(xi​−μ)(xj​−μ)​]
+분산 값에 따라 역전파 과정을 계속 거치면서 작으면 폭발되고 커지면 소실 될 가능성이 있음
+
+
+Pre-LN
+- Pre-LN 역전파 과정을 보면
 
 * x → [LayerNorm → Sublayer] → (+x) → output
 * ∂L/∂x = ∂L/∂output · ∂output/∂x
 * output = x + sublayer(LayerNorm(x))
+  
+* ∂output/∂x = ∂x/∂x + ∂sublayer/∂LayerNorm_out · ∂LayerNorm_out/∂x
+            = 1 + (LayerNorm을 거친 편미분)
 
+위와 같은 과정에 의해 무조건 역전파 과정시 1이 남기에 소실 문제는 해결 되었다고 생각되고, LayerNorm 편미분 부분은 분산에 따라 폭발 될 수도 있다고 생각이 듦 
+
+요약
+- Post-LayerNorm: 전체 기울기가 LayerNorm 편미분에 의존 → 분산 값에 따라 기울기 소실 또는 폭발이 가능
+- Pre-LayerNorm: 최소한 1이라는 상수항이 항상 보장됨 → 완전한 소실 방지
+
+
+
+# LayerNorm과 기울기 소실 문제 분석
+
+## Post-LayerNorm에서 기울기 소실이 주 문제인 이유
+
+Post-LayerNorm (LayerNorm을 residual connection 뒤에 두는 것)에서는 주로 **기울기 소실(gradient vanishing)**이 문제가 됩니다.
+
+### 기울기 소실이 주요 문제인 이유
+
+1. **깊은 네트워크에서 기울기 전파 문제**: Post-LayerNorm에서는 기울기가 LayerNorm을 거치면서 정규화 과정에서 스케일이 줄어들 수 있고, 이것이 깊은 층을 거치면서 누적되어 앞쪽 층으로 갈수록 기울기가 매우 작아집니다.
+
+2. **학습 초기 불안정성**: 특히 학습 초기에 가중치들이 무작위로 초기화된 상태에서 Post-LayerNorm은 기울기 흐름을 방해할 수 있습니다.
+
+### Pre-LayerNorm이 선호되는 이유
+
+- Pre-LayerNorm (LayerNorm을 residual connection 앞에 두는 것)은 잔차 연결이 정규화되지 않은 기울기를 직접 전달할 수 있어 기울기 소실 문제를 완화합니다.
+- 이것이 GPT-2 이후 대부분의 Transformer 모델들이 Pre-LayerNorm을 채택한 주된 이유입니다.
+
+## 왜 증폭보다 소실이 주 문제인가?
+
+### LayerNorm의 정규화 특성
+
+1. **분산을 1로 고정**: LayerNorm은 출력의 분산을 항상 1로 만듭니다. 이는 기울기가 너무 커지는 것을 자연스럽게 억제하는 효과가 있습니다.
+
+2. **스케일링 파라미터 γ의 초기값**: 일반적으로 γ는 1로 초기화되므로, 학습 초기에는 증폭보다는 안정적인 정규화가 우선됩니다.
+
+### Post-LayerNorm에서 소실이 주 문제인 구체적 이유
+
+**Post-LayerNorm 구조:**
+```
+x → Attention/FFN → (+residual) → LayerNorm → 다음 층
+```
+
+이 구조에서:
+- **잔차 연결 후** LayerNorm이 적용되므로, 잔차와 함께 더해진 값이 정규화됩니다
+- 정규화 과정에서 **기울기의 크기가 줄어드는 경향**이 있습니다
+- 깊은 네트워크에서 이런 "크기 축소"가 층마다 누적되면서 앞쪽 층으로 갈수록 기울기가 소실됩니다
+
+**Pre-LayerNorm과의 차이:**
+```
+x → LayerNorm → Attention/FFN → (+residual) → 다음 층
+```
+- 잔차 연결이 **정규화되지 않은 기울기**를 직접 전달
+- 이로 인해 기울기가 더 안정적으로 뒤쪽 층에서 앞쪽 층으로 전파됩니다
+
+## 역전파 과정에서의 편미분 분석
+
+### LayerNorm의 역전파 편미분
+
+LayerNorm: $y = \gamma \frac{x - \mu}{\sigma} + \beta$
+
+역전파 시 입력에 대한 기울기는:
+$$\frac{\partial L}{\partial x_i} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial x_i}$$
+
+여기서 $\frac{\partial y}{\partial x_i}$가 핵심인데:
+
+$$\frac{\partial y_i}{\partial x_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(x_i - \mu)(x_j - \mu)}{\sigma^2 N} \right]$$
+
+### 기울기 소실이 발생하는 이유
+
+1. **$\frac{\gamma}{\sigma}$ 항**: 
+   - $\sigma$가 클 때 (입력의 분산이 클 때) 기울기가 작아집니다
+   - 학습 초기 $\gamma \approx 1$이므로 기울기 크기가 $\frac{1}{\sigma}$에 비례
+
+2. **평균 제거 항들**:
+   - $-\frac{1}{N}$과 상관관계 항이 기울기를 더욱 감소시킵니다
+   - 특히 배치 내 다른 원소들과의 의존성 때문에 기울기가 분산됩니다
+
+3. **연쇄법칙의 누적 효과**:
+   ```
+   ∂L/∂x₁ = ∂L/∂y₂ · ∂y₂/∂x₂ · ∂x₂/∂y₁ · ∂y₁/∂x₁
+   ```
+   각 층에서 < 1인 편미분들이 곱해지면서 지수적으로 감소
+
+### Post vs Pre LayerNorm의 차이
+
+- **Post**: 잔차 연결 후 LayerNorm이므로 모든 기울기가 LayerNorm의 편미분을 거쳐야 함
+- **Pre**: 잔차 연결이 LayerNorm을 우회하므로 일부 기울기가 직접 전파 가능
+
+## Post-LayerNorm vs Pre-LayerNorm 기울기 전파 비교
+
+### Post-LayerNorm의 역전파 과정
+
+**구조:**
+```
+x → Sublayer → (+residual) → LayerNorm → output
+```
+
+**역전파 계산:**
+$\frac{\partial L}{\partial x_i} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial x_i}$
+
+여기서 LayerNorm의 편미분:
+$\frac{\partial y_i}{\partial x_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(x_i - \mu)(x_j - \mu)}{\sigma^2 N} \right]$
+
+**특징:**
+- 모든 기울기가 LayerNorm의 편미분 $\frac{\gamma}{\sigma}$에 의존
+- $\sigma$ (분산)에 따라 기울기 크기가 결정됨:
+  - $\sigma$가 클 때: 기울기 소실
+  - $\sigma$가 작을 때: 기울기 폭발 가능성
+
+### Pre-LayerNorm의 역전파 과정
+
+**구조:**
+```
+x → LayerNorm → Sublayer → (+x) → output
+```
+
+**역전파 계산:**
+$\frac{\partial L}{\partial x} = \frac{\partial L}{\partial \text{output}} \cdot \frac{\partial \text{output}}{\partial x}$
+
+여기서 `output = x + sublayer(LayerNorm(x))`이므로:
+
+$\frac{\partial \text{output}}{\partial x} = \frac{\partial x}{\partial x} + \frac{\partial \text{sublayer}}{\partial \text{LayerNorm}_\text{out}} \cdot \frac{\partial \text{LayerNorm}_\text{out}}{\partial x}$
+
+$= 1 + \text{LayerNorm을 거친 편미분}$
+
+**특징:**
+- **직접 경로**: 상수항 `1`이 항상 보장됨 (잔차 연결)
+- **LayerNorm 경로**: 여전히 분산에 따른 변동 가능
+- 전체 기울기 = `1 + (변동 가능한 항)`
+
+### 기울기 안정성 비교
+
+| 구조 | 기울기 특성 | 주요 문제 |
+|------|-------------|-----------|
+| **Post-LayerNorm** | 전체 기울기가 $\frac{\gamma}{\sigma}$에 의존 | 분산에 따른 소실/폭발 |
+| **Pre-LayerNorm** | 최소 `1`의 기울기 보장 | 소실 방지, 폭발은 일부 경로에서만 |
+
+### 실제적 의미
+
+1. **Post-LayerNorm**:
+   - 깊은 네트워크에서 기울기가 층마다 $\frac{\gamma}{\sigma}$ 배수로 변화
+   - 누적 효과로 인한 심각한 기울기 소실
+
+2. **Pre-LayerNorm**:
+   - 직접 경로(`1`)가 기울기 소실을 방지
+   - LayerNorm 경로에서만 분산 의존적 변화 발생
+   - 전체적으로 안정적인 학습 가능
+
+## 결론
+
+- **Post-LayerNorm**: 전체 기울기가 LayerNorm 편미분에 의존하여 분산 값에 따른 기울기 소실 또는 폭발 가능
+- **Pre-LayerNorm**: 잔차 연결로 인한 상수항 `1`이 항상 보장되어 완전한 기울기 소실 방지
+- 이러한 수학적 안정성 때문에 현대 Transformer 모델들이 Pre-LayerNorm을 선호
 
 ### Reference
 [https://arxiv.org/abs/2503.1062](https://arxiv.org/abs/2503.10622) : Transformers without Normalization
