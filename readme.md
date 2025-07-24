@@ -279,32 +279,14 @@ Decoder (총 18개)
 
 ## Appendix(Pre-LN, Post-LN의 기울기 소실 및 증폭 문제 분석)
 
-### Post-LayerNorm에서 역전파 과정
+### Post vs Pre LayerNorm의 차이
 
-Post-LayerNorm 구조:
-```
-x → Attention/FFN → (+residual) → LayerNorm → 다음 층
-```
+- **Post**: 잔차 연결 후 LayerNorm이므로 모든 기울기가 LayerNorm의 편미분을 거쳐야 함
+- **Pre**: 잔차 연결이 LayerNorm을 우회하므로 일부 기울기가 직접 전파 가능
 
-이 구조에서:
-- 잔차 연결 후 LayerNorm이 적용되므로, 잔차와 함께 더해진 값이 정규화 된다.
+## Post-LayerNorm vs Pre-LayerNorm 기울기 전파 비교
 
-**Pre-LayerNorm과의 차이:**
-```
-x → LayerNorm → Attention/FFN → (+residual) → 다음 층
-```
-
-LayerNorm: $y = \gamma \frac{x - \mu}{\sigma} + \beta$
-
-역전파 시 입력에 대한 기울기는:
-$$\frac{\partial L}{\partial x_i} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial x_i}$$
-
-여기서 $\frac{\partial y}{\partial x_i}$가 핵심인데:
-
-$$\frac{\partial y_i}{\partial x_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(x_i - \mu)(x_j - \mu)}{\sigma^2 N} \right]$$
-
-
-### Post-LayerNorm 역전파 과정
+### Post-LayerNorm의 역전파 과정
 
 **구조:**
 ```
