@@ -303,8 +303,7 @@ $$\frac{\partial L}{\partial x_i} = \frac{\partial L}{\partial y} \cdot \frac{\p
 
 여기서 LayerNorm의 편미분:
 
-$\frac{\partial y_i}{\partial (x + \text{sublayer}(x))_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(z_i - \mu)(z_j - \mu)}{\sigma^2 N} \right]$  
-(단, $z = x + \text{sublayer}(x)$)
+∂xj​∂yi​​=σγ​[δij​−N1​−σ2N(xi​−μ)(xj​−μ)​]
 
 $$
 \frac{\partial y_i}{\partial (x + \text{sublayer}(x))_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(z_i - \mu)(z_j - \mu)}{\sigma^2 N} \right]
