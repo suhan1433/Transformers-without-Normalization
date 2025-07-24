@@ -277,6 +277,8 @@ Decoder (총 18개)
     - 아키텍처 변경으로 인한 추가적인 학습 비용 발생
   - Inference 적용 시에도 동일한 문제
 
+## Appendix
+Post일 때 기울기 소실 문제
 
 
 ### Reference
