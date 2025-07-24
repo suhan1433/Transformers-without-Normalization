@@ -302,7 +302,7 @@ $$\frac{\partial L}{\partial x_i} = \frac{\partial L}{\partial y} \cdot \frac{\p
 $$\frac{\partial L}{\partial x_i} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial (x + \text{sublayer}(x))} \cdot \left(1 + \frac{\partial \text{sublayer}(x)}{\partial x_i}\right)$$
 
 여기서 LayerNorm의 편미분:
-$$\frac{\partial y_i}{\partial (x + \text{sublayer}(x))_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(z_i - \mu)(z_j - \mu)}{\sigma^2 N} \right]$$
+$\frac{\partial y_i}{\partial (x + \text{sublayer}(x))_j} = \frac{\gamma}{\sigma} \left[ \delta_{ij} - \frac{1}{N} - \frac{(z_i - \mu)(z_j - \mu)}{\sigma^2 N} \right]$
 (단, $z = x + \text{sublayer}(x)$)
 
 **특징:**
@@ -321,7 +321,7 @@ x → LayerNorm → Sublayer → (+x) → output
 **역전파 계산:**
 $$\frac{\partial L}{\partial x} = \frac{\partial L}{\partial \text{output}} \cdot \frac{\partial \text{output}}{\partial x}$$
 
-`output = x + sublayer(LayerNorm(x))`이므로:
+여기서 `output = x + sublayer(LayerNorm(x))`이므로:
 
 $\frac{\partial \text{output}}{\partial x} = \frac{\partial x}{\partial x} + \frac{\partial \text{sublayer}}{\partial \text{LayerNorm}\,\text{out}} \cdot \frac{\partial \text{LayerNorm}\,\text{out}}{\partial x}$
 
