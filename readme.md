@@ -280,8 +280,8 @@ Decoder (총 18개)
 
 ### Post vs Pre LayerNorm의 차이
 
-- **Post**: 잔차 연결 후 LayerNorm이므로 모든 기울기가 LayerNorm의 편미분을 거쳐야 함
-- **Pre**: 잔차 연결이 LayerNorm을 우회하므로 일부 기울기가 직접 전파 가능
+- Post: 잔차 연결 이후에 LayerNorm이 적용되므로, 모든 기울기가 LayerNorm을 반드시 통과해야 함
+- Pre: LayerNorm이 먼저 적용되고 잔차 연결이 뒤따라서, 일부 기울기는 LayerNorm을 거치지 않고 바로 전달됨
 
 ### Post-LayerNorm의 역전파 과정
 
