@@ -10,7 +10,7 @@ LayerNorm의 통계량 계산 오버헤드와 GPU 동기화 비용을 element-wi
 - [실험 방법](#실험)
 - [실험 결과](#결과)
 - [LN의 GPU 동기화 과정](#GPU-동기화-과정-예시)
-- [Pre,Post LN 기울기 문제 고찰](#-Appendix)
+- [Pre,Post LN 기울기 문제 고찰](#appendixpre-ln-post-ln의-기울기-소실-및-증폭-문제-분석)
 
 
 ## Transformer 정규화 방식 비교
