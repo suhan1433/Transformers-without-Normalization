@@ -240,9 +240,8 @@ Decoder (총 18개)
   - Feed-Forward Network 뒤 1개
 - 총 6개 블록 → 3 × 6 = 18개
 
+### 모델 결과 비교
 <img width="1591" height="541" alt="스크린샷 2025-07-22 오후 12 52 09" src="https://github.com/user-attachments/assets/16577522-454e-47ff-8a74-dc5c14f1dc37" />
-
-* 모델 성능 비교
 
 | 모델            | Train Loss ↓ | Val Loss ↓ | BLEU ↑  | Epoch | 수렴 속도 |
 |-----------------|--------------|------------|---------|-------|-----------|
