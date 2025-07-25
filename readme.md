@@ -4,9 +4,9 @@
 ### 개요
 트랜스포머 모델의 학습 효율성을 향상시키기 위해, 기존 LayerNorm의 계산 복잡도 및 병렬화 제약 문제를 Dynamic Tanh (DyT) 정규화 기법으로 대체하는 실험을 수행했습니다. 
 LayerNorm의 통계량 계산 오버헤드와 GPU 동기화 비용을 element-wise 연산 기반의 DyT로 해결하여, 모델 성능 유지와 동시에 훈련 속도 향상을 기대했습니다.
-[https://arxiv.org/abs/2503.1062](https://arxiv.org/abs/2503.10622)
 
 약 2만 7천 개의 영어-독일어 번역 데이터셋을 활용하여, Loss 수렴 속도와 BLEU 점수를 평가했습니다.
+[실험 결과](##-결과)
 
 ## Transformer 정규화 방식 비교
 
